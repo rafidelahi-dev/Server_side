@@ -1,0 +1,59 @@
+// This is your Prisma schema file,
+
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                 String               @id @default(uuid())
+  name               String
+  email              String
+  password           String
+  products           Product[]
+  sentTransactions ProductTransaction[] @relation("sender")
+  receivedTransactions ProductTransaction[] @relation("receiver")
+}
+
+model Category {
+  name     String    @id
+  products Product[]
+}
+
+model Product {
+  id                 String               @id @default(uuid())
+  name               String
+  price              Float
+  rentalPrice        Float
+  image              String
+  category           Category             @relation(fields: [categoryName], references: [name])
+  owner              User                 @relation(fields: [userId], references: [id])
+  categoryName       String
+  userId             String
+  productTransactions ProductTransaction[]
+}
+
+model ProductTransaction {
+  id              Int      @id @default(autoincrement())
+  transactionType String //either purchased or lent
+  product         Product  @relation(fields: [productId], references: [id])
+  sender          User     @relation("sender",fields: [senderUserId], references: [id])
+  receiver        User     @relation("receiver",fields: [receiverUserId], references: [id])
+  recordedAt      DateTime @default(now())
+  productId       String
+  senderUserId          String
+  receiverUserId          String
+}
+
+
+// npm install prisma 
+// npx prisma init 
+// docker compose up -d 
+// npx prisma db push 
+// npx prisma studio
