@@ -14,9 +14,11 @@ const controller = {
     }
 },
   logIn: (req, res) => {
-    const login_json = req.body;
-    console.log(login_json);
-    res.send("We have recieved your login data")
+    const {email, password} = req.body;
+    console.log(email ,password);
+    res.send({
+      email, password
+    })
   },
   profile: (req, res) => {
     res.send(`Your profile`)
