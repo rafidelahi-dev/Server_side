@@ -9,24 +9,71 @@ const controller = {
   },
 
   //register route
-  register: (req, res) => {
-    const register_json = req.body
-    console.log(
-      register_json.userName,
-      register_json.email,
-      register_json.password
-    )
-    //Making a mock test for username taken or not
+  register: async (req, res) => {
+    console.log(req.body)
+    try {
+    const { username, email, password } = req.body;
+    console.log(typeof price, typeof rentalPrice, typeof category);
+    const userAdding = await prisma.product.create({
+      data: {
+        username, 
+        email,
+        password,
+      },
+    })
+    
+    res.send({
+      name: userAdding.name,
+      email: userAdding.email,
+      password: userAdding.password,
+    })
+    
+  //Making a mock test for username taken or not
 
-    if (register_json.email == `rafidelahi.dev@gmail.com`) {
-      res.send('This name is already taken try something different')
-    } else if (register_json.password.length < 8) {
-      res.send(`Password length is too short`)
-    } else
-      res.send(
-        `Congratulations! You are our newest member on Teebay. Welcome to the community`
-      )
-  },
+    // if (register_json.email == `rafidelahi.dev@gmail.com`) {
+    //   res.send('This name is already taken try something different')
+    // } else if (register_json.password.length < 8) {
+    //   res.send(`Password length is too short`)
+    // } else
+    //   res.send(
+    //     `Congratulations! You are our newest member on Teebay. Welcome to the community`
+    //   )
+  }
+  catch (error) {
+    console.log(error);
+    res.status(500).send('Failed to add the product.');
+  }
+},
+
+//i want to add new products route
+  myproductadd: async (req, res) => {
+  console.log(req.body);
+  try {
+    const { name, price, rentalPrice, category } = req.body;
+    console.log(typeof price, typeof rentalPrice, typeof category);
+    const newPrice = parseInt(price)
+    const newRentalPrice = parseInt(rentalPrice)
+    const productAdding = await prisma.product.create({
+      data: {
+        name,
+        price: newPrice,
+        rentalPrice : newRentalPrice,
+        category,
+        image: "",
+      },
+    });
+
+    res.send({
+      name: productAdding.name,
+      price: price,
+      rentalPrice: rentalPrice,
+      category: productAdding.category,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send('Failed to add the product.');
+  }
+},
 
   //logIn route
   logIn: (req, res) => {
@@ -68,49 +115,10 @@ const controller = {
     res.send(`The product ........ was deleted`)
   },
 
-  //i want to add new products route
-  myproductadd: async (req, res) => {
-  console.log(req.body);
-  try {
-    const { name, price, rentalPrice, category } = req.body;
-
-    // Create a new product in the database using Prisma Client
-    const product = await prisma.product.create({
-      data: {
-        name,
-        price,
-        rentalPrice,
-        category: {
-          connect: { name: category }, // This connects the product to an existing category with the given name
-        },
-      },
-    });
-
-    res.send(`Product ${product.name}, price: ${product.price}, rentalPrice: ${product.rentalPrice} BDT/month, category: ${product.categoryName} has been added`);
-  } catch (error) {
-    console.log(error);
-    res.status(500).send('Failed to add the product.');
-  }
-},
+  
 
 
-  //     // Create a new product using the Prisma client
-  //     const product = await prisma.product.create({
-  //       data: {
-  //         name: name,
-  //         price: '',
-  //         // rentalPrice: rent_price,
-  //         // image: '', // Add the path to the image if available
-  //       },
-  //     })
 
-  //     console.log('New product added:', product)
-  //     res.send(`New product '${name}' has been uploaded`)
-  //   } catch (error) {
-  //     console.error('Error adding product:', error)
-  //     res.status(500).send('Error adding product')
-  //   }
-  // },
 
 //i want to see all the other products route
   allproducts: (req, res) => {
@@ -133,5 +141,6 @@ const controller = {
     res.send(`Your stats for the things you bought, borrowed, sold, rented`)
   },
 }
+
 
 module.exports.controller = controller
