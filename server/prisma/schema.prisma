@@ -16,14 +16,14 @@ model User {
   name               String
   email              String
   password           String
-  // products           Product[]
+  products           Product[]
   sentTransactions ProductTransaction[] @relation("sender")
   receivedTransactions ProductTransaction[] @relation("receiver")
 }
 
 model Category {
   name     String    @id
-  // products Product[]
+  products Product[]
 }
 
 model Product {
@@ -31,11 +31,10 @@ model Product {
   name               String
   price              Float
   rentalPrice        Float
-  image              String
-  // category           Category             @relation(fields: [categoryName], references: [name])
-  // owner              User                 @relation(fields: [userId], references: [id])
-  // categoryName       String
-  // userId             String
+  category           Category             @relation(fields: [categoryName], references: [name])
+  owner              User                 @relation(fields: [userId], references: [id])
+  categoryName       String
+  userId             String
   productTransactions ProductTransaction[]
 }
 

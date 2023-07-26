@@ -17,8 +17,7 @@ const controller = {
       register_json.password
     )
     //Making a mock test for username taken or not
-    // console.log(register_json.password.length >= 8)
-    // console.log(register_json.userName == true)
+
     if (register_json.email == `rafidelahi.dev@gmail.com`) {
       res.send('This name is already taken try something different')
     } else if (register_json.password.length < 8) {
@@ -71,40 +70,54 @@ const controller = {
 
   //i want to add new products route
   myproductadd: async (req, res) => {
-    console.log(req.body);
-    try {
-      const {
-        title,
-        description,
-        purchase_price,
-        rent_price,
-        rent_duration,
-        
-      } = req.body
-      console.log(req.body);
+  console.log(req.body);
+  try {
+    const { name, price, rentalPrice, category } = req.body;
 
-      // Create a new product using the Prisma client
-      const product = await prisma.product.create({
-        data: {
-          name: title,
-          price: purchase_price,
-          rentalPrice: rent_price,
-          image: '', // Add the path to the image if available
+    // Create a new product in the database using Prisma Client
+    const product = await prisma.product.create({
+      data: {
+        name,
+        price,
+        rentalPrice,
+        category: {
+          connect: { name: category }, // This connects the product to an existing category with the given name
         },
-      })
+      },
+    });
 
-      console.log('New product added:', product)
-      res.send(`New product '${title}' has been uploaded`)
-    } catch (error) {
-      console.error('Error adding product:', error)
-      res.status(500).send('Error adding product')
-    }
-  },
-  //i want to see all the other products route
+    res.send(`Product ${product.name}, price: ${product.price}, rentalPrice: ${product.rentalPrice} BDT/month, category: ${product.categoryName} has been added`);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send('Failed to add the product.');
+  }
+},
+
+
+  //     // Create a new product using the Prisma client
+  //     const product = await prisma.product.create({
+  //       data: {
+  //         name: name,
+  //         price: '',
+  //         // rentalPrice: rent_price,
+  //         // image: '', // Add the path to the image if available
+  //       },
+  //     })
+
+  //     console.log('New product added:', product)
+  //     res.send(`New product '${name}' has been uploaded`)
+  //   } catch (error) {
+  //     console.error('Error adding product:', error)
+  //     res.status(500).send('Error adding product')
+  //   }
+  // },
+
+//i want to see all the other products route
   allproducts: (req, res) => {
     res.send(`Showing all the products available to buy or rent`)
   },
-
+    
+ 
   //i want to buy a products route
   allproductbuy: (req, res) => {
     res.send(`Your purchase was successful`)
@@ -122,17 +135,3 @@ const controller = {
 }
 
 module.exports.controller = controller
-
-/* const product = await prisma.product.create({
-    data: {
-      id,
-      name: title,
-      price: purchase_price,
-      rentalPrice: rent_price,
-      image: '', // Add the path to the image if available
-      categoryName: '', // Add the category name if available
-      userId: ownerId,
-    },
-  });
-
-  */
